@@ -1,0 +1,15 @@
+<package format="2">
+  <name>robot_slam</name>
+  <description>A simple SLAM demo</description>
+  <maintainer email="zchenpds@gmail.com">Zhuo</maintainer>
+  <version>0.0.1</version>
+  <author>Zhuo Chen</author>
+  <license>BSD2</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>rosmsg</depend>
+  <depend>move_base</depend>
+  <depend>gmapping</depend>
+  <depend>rviz</depend>
+  <depend>tf</depend>
+</package>
