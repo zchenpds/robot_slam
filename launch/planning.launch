@@ -1,0 +1,16 @@
+<launch>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d slam.rviz">
+    <remap from="/move_base_simple/goal" to="/waypoint"/>
+  </node>
+  <!--<node name="gmapping" pkg="gmapping" type="slam_gmapping"/>-->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find robot_slam)/map/mymap.yaml"/>
+  <node name="follow_waypoints" pkg="follow_waypoints" type="follow_waypoints"/>
+  <include file="$(find amcl)/examples/amcl_diff.launch" />
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find robot_slam)/params/planning/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
+    <rosparam file="$(find robot_slam)/params/planning/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find robot_slam)/params/planning/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find robot_slam)/params/planning/global_costmap_params.yaml" command="load" /> 
+    <rosparam file="$(find robot_slam)/params/planning/base_local_planner_params.yaml" command="load" />
+ </node>
+</launch>
