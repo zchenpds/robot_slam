@@ -90,7 +90,12 @@ function sysCall_sensing()
                     if dist1~=nil then
                         while (angle <= angle2) do
                             tt=(angle-angle1)/(angle2-angle1)
-                            dist=dist1*(1-tt)+dist2*tt
+                            --dist=dist1*(1-tt)+dist2*tt
+                            if (tt<0.5) then
+                                dist=dist1
+                            else
+                                dist=dist2
+                            end
                             table.insert(distanceData,dist)
                             dataLen=dataLen+1
                             angle=angle+angleInc
@@ -135,7 +140,12 @@ function sysCall_sensing()
                     if dist1~=nil then
                         while (angle <= angle2) do
                             tt=(angle-angle1)/(angle2-angle1)
-                            dist=dist1*(1-tt)+dist2*tt
+                            --dist=dist1*(1-tt)+dist2*tt
+                            if (tt<0.5) then
+                                dist=dist1
+                            else
+                                dist=dist2
+                            end
                             table.insert(distanceData,dist)
                             dataLen=dataLen+1
                             angle=angle+angleInc
@@ -198,7 +208,7 @@ function sysCall_sensing()
         laserMsg['angle_min']=-scanningAngle/2
         laserMsg['angle_max']=scanningAngle/2
         laserMsg['angle_increment']=angleInc
-        print(dataLen)
+        --print(dataLen)
         laserMsg['time_increment']=0
         laserMsg['scan_time']=0.05
         laserMsg['range_min']=0

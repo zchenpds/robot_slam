@@ -55,6 +55,7 @@ end
 function cmd_callback(msg)
     vel=msg['linear']['x']
     omega=msg['angular']['z']
+    --print(vel, omega)
 end
 
 function sysCall_actuation() 
@@ -72,16 +73,16 @@ function sysCall_actuation()
     
     vLeft=v0
     vRight=v0
+    if (controlMode==1) and (vel~=nil) then
+        vLeft = (vel - 0.17 * omega)*8
+        vRight = (vel + 0.17 * omega)*8
+    end
     
     for i=1,16,1 do
         vLeft=vLeft+braitenbergL[i]*detect[i]
         vRight=vRight+braitenbergR[i]*detect[i]
     end
     
-    if (controlMode==1) and (vel~=nil) then
-        vLeft = vel - 0.17 * omega
-        vRight = vel + 0.17 * omega
-    end
 
     sim.setJointTargetVelocity(motorLeft,vLeft)
     sim.setJointTargetVelocity(motorRight,vRight)
