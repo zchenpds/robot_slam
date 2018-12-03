@@ -2,8 +2,8 @@
   <node name="rviz" pkg="rviz" type="rviz" args="-d slam.rviz">
     <remap from="/move_base_simple/goal" to="/waypoint"/>
   </node>
-  <!--<node name="gmapping" pkg="gmapping" type="slam_gmapping"/>-->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find robot_slam)/map/mymap.yaml"/>
+  <node name="trajectory_server" pkg="hector_trajectory_server" type="hector_trajectory_server"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find robot_slam)/map/mymap2.yaml"/>
   <node name="follow_waypoints" pkg="follow_waypoints" type="follow_waypoints"/>
   <include file="$(find amcl)/examples/amcl_diff.launch" />
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
