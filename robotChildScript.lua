@@ -15,6 +15,7 @@ function sysCall_init()
     -- ROS related stuff:
     robotHandle=sim.getObjectHandle('Pioneer_p3dx')
     pubTf = simROS.advertise('/tf', 'tf/tfMessage')
+    pubClock = simROS.advertise('/clock', 'rosgraph_msgs/Clock')
     subCmd = simROS.subscribe('/cmd_vel', 'geometry_msgs/Twist', 'cmd_callback')
     vel=nil
     omega=nil
@@ -25,6 +26,7 @@ end
 
 function sysCall_cleanup() 
     simROS.shutdownPublisher(pubTf)
+    simROS.shutdownPublisher(pubClock)
     simROS.shutdownSubscriber(subCmd)
 end 
 
@@ -41,15 +43,14 @@ function sysCall_sensing()
     qArr=sim.getObjectQuaternion(robotHandle,-1)
     p={x=pArr[1],y=pArr[2],z=pArr[3]}
     q={x=qArr[1],y=qArr[2],z=qArr[3],w=qArr[4]}
-    --print(q)
     tfStamped2={}
     tfStamped2['header']={seq=0,stamp=simROS.getTime(), frame_id="odom"}
     tfStamped2['child_frame_id']="base_link"
     tfStamped2['transform']={translation=p,rotation=q}
     d={}
     d['transforms']={tfStamped1,tfStamped2}
-    --print(d)
     simROS.publish(pubTf,d)
+    simROS.publish(pubClock,{clock=sim.getSimulationTime()})
 end
 
 function cmd_callback(msg)
@@ -73,15 +74,16 @@ function sysCall_actuation()
     
     vLeft=v0
     vRight=v0
+    for i=1,16,1 do
+        vLeft=vLeft+braitenbergL[i]*detect[i]
+        vRight=vRight+braitenbergR[i]*detect[i]
+    end
+
     if (controlMode==1) and (vel~=nil) then
         vLeft = (vel - 0.17 * omega)*8
         vRight = (vel + 0.17 * omega)*8
     end
     
-    for i=1,16,1 do
-        vLeft=vLeft+braitenbergL[i]*detect[i]
-        vRight=vRight+braitenbergR[i]*detect[i]
-    end
     
 
     sim.setJointTargetVelocity(motorLeft,vLeft)

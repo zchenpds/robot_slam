@@ -1,7 +1,7 @@
 <launch>
+  <param name="use_sim_time" type="bool" value="true"/>
   <node name="rviz" pkg="rviz" type="rviz" args="-d slam.rviz"/>
   <node name="gmapping" pkg="gmapping" type="slam_gmapping"/>
-  <!--<include file="$(find amcl)/examples/amcl_diff.launch" /> -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find robot_slam)/params/slam/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
     <rosparam file="$(find robot_slam)/params/slam/costmap_common_params.yaml" command="load" ns="local_costmap" />

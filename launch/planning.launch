@@ -1,4 +1,5 @@
 <launch>
+  <param name="use_sim_time" type="bool" value="true"/>
   <node name="rviz" pkg="rviz" type="rviz" args="-d slam.rviz">
     <remap from="/move_base_simple/goal" to="/waypoint"/>
   </node>
