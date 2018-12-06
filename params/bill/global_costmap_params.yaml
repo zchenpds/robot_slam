@@ -2,7 +2,7 @@ global_costmap:
   global_frame: map
   robot_base_frame: bill_link
   update_frequency: 5.0
-  static_map: false
+  static_map: true
   rolling_window: true
   width: 50.0
   height: 50.0

@@ -20,5 +20,6 @@
     <rosparam file="$(find robot_slam)/params/bill/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find robot_slam)/params/bill/global_costmap_params.yaml" command="load" /> 
     <rosparam file="$(find robot_slam)/params/bill/base_local_planner_params.yaml" command="load" />
+    <remap from="/bill/map" to="/map"/>
  </node>
 </launch>
