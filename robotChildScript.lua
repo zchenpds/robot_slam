@@ -15,6 +15,7 @@ function sysCall_init()
     -- ROS related stuff:
     robotHandle=sim.getObjectHandle('Pioneer_p3dx')
     pubTf = simROS.advertise('/tf', 'tf/tfMessage')
+    pubGTPose = simROS.advertise('/robot_pose', 'geometry_msgs/PoseStamped')
     pubClock = simROS.advertise('/clock', 'rosgraph_msgs/Clock')
     subCmd = simROS.subscribe('/cmd_vel', 'geometry_msgs/Twist', 'cmd_callback')
     vel=nil
@@ -27,6 +28,7 @@ end
 function sysCall_cleanup() 
     simROS.shutdownPublisher(pubTf)
     simROS.shutdownPublisher(pubClock)
+    simROS.shutdownPublisher(pubGTPose)
     simROS.shutdownSubscriber(subCmd)
 end 
 
@@ -51,6 +53,11 @@ function sysCall_sensing()
     d['transforms']={tfStamped1,tfStamped2}
     simROS.publish(pubTf,d)
     simROS.publish(pubClock,{clock=sim.getSimulationTime()})
+
+    poseStamped = {}
+    poseStamped['header'] = {seq=0, stamp=simROS.getTime(), frame_id="map"}
+    poseStamped['pose'] = {position=p, orientation=q}
+    simROS.publish(pubGTPose, poseStamped)
 end
 
 function cmd_callback(msg)

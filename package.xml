@@ -12,4 +12,6 @@
   <depend>gmapping</depend>
   <depend>rviz</depend>
   <depend>tf</depend>
+  <depend>actionlib</depend>
+  <depend>actionlib_msgs</depend>
 </package>

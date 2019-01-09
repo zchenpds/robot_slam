@@ -28,7 +28,8 @@ function sysCall_init()
     nominalVelocity=sim.getScriptSimulationParameter(sim.handle_self,'walkingSpeed')
     randomColors=sim.getScriptSimulationParameter(sim.handle_self,'randomColors')
     randomWalkingSpeed=sim.getScriptSimulationParameter(sim.handle_self,'randomWalkingSpeed')
-    
+    enableGoalPub=sim.getScriptSimulationParameter(sim.handle_self,'enableGoalPub')
+
     speedModulator=1
     if (randomWalkingSpeed) then
         --speedModulator=(0.7+0.6*math.random())
@@ -141,6 +142,13 @@ function sysCall_actuation()
     forward=true
 
     -- ROS related stuff
+    local p={x=0.15,y=0,z=1.2}
+    local q={x=0,y=0,z=0,w=1}
+    tfStamped1={}
+    tfStamped1['header']={seq=0,stamp=simROS.getTime(), frame_id="bill_link"}
+    tfStamped1['child_frame_id']="bill_vision"
+    tfStamped1['transform']={translation=p,rotation=q}
+    
     pBill=sim.getObjectPosition(modelHandle,-1)
     qBill=sim.getObjectQuaternion(modelHandle,-1)
     p={x=pBill[1],y=pBill[2],z=pBill[3]}
@@ -150,7 +158,7 @@ function sysCall_actuation()
     tfStamped2['child_frame_id']="bill_link"
     tfStamped2['transform']={translation=p,rotation=q}
     d={}
-    d['transforms']={tfStamped2}
+    d['transforms']={tfStamped1,tfStamped2}
     simROS.publish(pubTf,d)
 
     dDesired = 1.5
@@ -166,16 +174,17 @@ function sysCall_actuation()
     poseStamped = {}
     poseStamped['header'] = {seq=0, stamp=simROS.getTime(), frame_id="map"}
     poseStamped['pose'] = {position=p, orientation=q}
-
-    if (simTimePrev == nil) then
-        simTimePrev = simTime
-        simROS.publish(pubGoal, poseStamped)
-    end
-    if (simTime - simTimePrev > 1) then
-        simROS.publish(pubGoal, poseStamped)
-        simTimePrev = simTime
-    end
     
+    if (enableGoalPub == true) then
+        if (simTimePrev == nil) then
+            simTimePrev = simTime
+            simROS.publish(pubGoal, poseStamped)
+        end
+        if (simTime - simTimePrev > 1) then
+            simROS.publish(pubGoal, poseStamped)
+            simTimePrev = simTime
+        end
+    end
     
     -- 1. First check what the floor sensors tell us:
     if (floorNotDetected==0) then

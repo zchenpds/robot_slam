@@ -22,4 +22,5 @@
     <rosparam file="$(find robot_slam)/params/bill/base_local_planner_params.yaml" command="load" />
     <remap from="/bill/map" to="/map"/>
  </node>
+ <node name="bill_controller" pkg="robot_slam" type="bill_controller_node" output="screen"/>
 </launch>
