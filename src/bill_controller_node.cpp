@@ -11,12 +11,14 @@ class BillController{
 private:
     Client client;
     ros::NodeHandle nh;
+    ros::Subscriber sub_cmd_vel;
+    ros::Publisher pub_cmd_vel;
     tf::TransformListener listener;
     geometry_msgs::Pose target_pose;
     double target_distance;
     int seq;
     double dist_lower_limit, dist_upper_limit1, dist_upper_limit2;
-    double robot_max_vel_x;
+    double robot_max_vel_x, gain;
     ros::Time last_update_time;
 
 public:
@@ -25,20 +27,25 @@ public:
         : client("/bill/move_base")
         , seq(0)
         , last_update_time(0)
+        , sub_cmd_vel(nh.subscribe("/bill/cmd_vel", 1, &BillController::cmd_vel_callback, this))
+        , pub_cmd_vel(nh.advertise<geometry_msgs::Twist>("/bill/cmd_vel_scaled", 1))
     {
-        nh.param("/dist_lower_limit", dist_lower_limit, 2.0);
+        nh.param("/dist_lower_limit", dist_lower_limit, 1.5);
         nh.param("/dist_upper_limit1", dist_upper_limit1, 2.5);
         nh.param("/dist_upper_limit2", dist_upper_limit2, 3.0);
         bool ret;
         ret = nh.param("/move_base/TrajectoryPlannerROS/max_vel_x", robot_max_vel_x, 0.85);
         robot_max_vel_x *= 0.50;
-        if (ret == false)
-            ROS_ERROR("Cannot find parameter /move_base/TrajectoryPlannerROS/max_vel_x");
-        else
-            ROS_INFO("Found robot_max_vel_x to be %.3f", robot_max_vel_x);
+        ROS_INFO("Found robot_max_vel_x to be %.3f", robot_max_vel_x);
         ROS_INFO("bill_controller is waiting for server......");
         client.waitForServer();
         ROS_INFO("bill_controller is connected to the server!");
+    }
+
+    void cmd_vel_callback(geometry_msgs::Twist msg) {
+        msg.angular.z *= gain;
+        msg.linear.x *= gain;
+        pub_cmd_vel.publish(msg);
     }
 
     void update() {
@@ -59,6 +66,7 @@ public:
             bill_max_vel_x_choice = 3; // cancel goal
         }
         else if (target_distance < dist_upper_limit1) {
+            gain = (target_distance - dist_lower_limit) / (dist_upper_limit1 - dist_lower_limit);
             bill_max_vel_x_choice = 1; // send goal
         }
         else if (target_distance > dist_upper_limit2) {
