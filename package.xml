@@ -15,4 +15,11 @@
   <depend>actionlib</depend>
   <depend>actionlib_msgs</depend>
   <depend>rgbdslam</depend>
+  <depend>nav_core</depend>
+  <depend>base_local_planner</depend>
+  <depend>pluginlib</depend>
+  <depend>costmap_2d</depend>
+  <export>
+    <nav_core plugin="${prefix}/describe8_global_planner.xml" />
+  </export>
 </package>

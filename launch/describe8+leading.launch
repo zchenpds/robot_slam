@@ -1,0 +1,28 @@
+<launch>
+  <param name="use_sim_time" type="bool" value="true"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d slam.rviz">
+    <!--<remap from="/move_base_simple/goal" to="/waypoint"/>-->
+  </node>
+  <node name="trajectory_server" pkg="hector_trajectory_server" type="hector_trajectory_server"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find robot_slam)/map/mymap2.yaml"/>
+  <!--<node name="follow_waypoints" pkg="follow_waypoints" type="follow_waypoints"/>-->
+  <include file="$(find amcl)/examples/amcl_diff.launch" />
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find robot_slam)/params/planning/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
+    <rosparam file="$(find robot_slam)/params/planning/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find robot_slam)/params/planning/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find robot_slam)/params/planning/global_costmap_params.yaml" command="load" /> 
+    <rosparam file="$(find robot_slam)/params/planning/base_local_planner_params.yaml" command="load" />
+    <param name="recovery_behavior_enabled" type="bool" value="false" />
+    <param name="base_global_planner" type="string" value="robot_slam/Describe8" />
+ </node>
+ <node ns="bill" pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find robot_slam)/params/bill/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
+    <rosparam file="$(find robot_slam)/params/bill/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find robot_slam)/params/bill/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find robot_slam)/params/bill/global_costmap_params.yaml" command="load" /> 
+    <rosparam file="$(find robot_slam)/params/bill/base_local_planner_params.yaml" command="load" />
+    <remap from="/bill/map" to="/map"/>
+ </node>
+ <node name="bill_controller" pkg="robot_slam" type="bill_controller_node" output="screen"/>
+</launch>

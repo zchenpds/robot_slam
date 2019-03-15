@@ -1,0 +1,7 @@
+<library path="lib/libdescribe8">
+  <class name="robot_slam/Describe8"type="robot_slam::Describe8" base_class_type="nav_core::BaseGlobalPlanner">
+    <description>
+        This is a nav_core global planner plugin for generating an "8" path.
+    </description>
+  </class>
+</library>
